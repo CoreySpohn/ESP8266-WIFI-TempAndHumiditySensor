@@ -56,13 +56,14 @@ void loop() {
 
   float hTotal = 0;
   float tTotal = 0;
+  int fail = 0;
 
   // Check to verify it's working
   float h = dht.readHumidity(); // Read the humidity
   float t = dht.readTemperature(true); // Read the temperature (true) for fahrenheit
   if (isnan(h) || isnan(t)) {
     Serial.println("Failed to read from sensor");
-    return;
+    fail = 1;
     }
 
   for(int n = 0; n < 100000 ; n++){
@@ -128,12 +129,21 @@ void loop() {
       Serial.println(".");
       String request = client.readStringUntil('\r');
       Serial.println(request);
-      client.flush();
-      client.print(h);
-      client.print("`");
-      client.print(t);
-      client.print(":");
-      client.print(hi);
+      
+      if (fail == 1) {
+        client.flush();
+        client.print("Failed to read sensor.");
+        }
+        
+      else{
+        client.flush();
+        client.print(h);
+        client.print("`");
+        client.print(t);
+        client.print(":");
+        client.print(hi);
+      }
+      
     }
     client.stop();
   }
